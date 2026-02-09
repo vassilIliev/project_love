@@ -31,7 +31,15 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
+.env
+.env.local
+.env*.local
+
+# clerk (removed but ignore in case)
+.clerk/
+
+# prisma (removed but ignore in case)
+prisma/
 
 # vercel
 .vercel
