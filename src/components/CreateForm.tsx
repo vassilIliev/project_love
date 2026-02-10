@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 const LIMITS = {
   recipientName: 50,
@@ -25,6 +25,18 @@ export default function CreateForm() {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldName, boolean>>>({});
   const [focusedField, setFocusedField] = useState<FieldName | null>(null);
+
+  // Reset loading state when user navigates back (e.g. from Stripe checkout).
+  // The "pageshow" event fires on back/forward navigation, including bfcache restores.
+  useEffect(() => {
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) {
+        setLoading(false);
+      }
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, []);
 
   const handleChange = useCallback((field: FieldName, value: string) => {
     const atLimit = value.length >= LIMITS[field];
