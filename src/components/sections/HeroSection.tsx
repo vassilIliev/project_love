@@ -20,7 +20,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center px-4 text-center">
+    <section className="min-h-screen flex flex-col items-center justify-center px-4 pt-16 text-center">
       <div className="space-y-6 max-w-2xl mx-auto">
         {/* Animated emoji with decorative ring */}
         <div className="animate-stagger-in stagger-1 !mb-1">
