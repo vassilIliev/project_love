@@ -12,8 +12,11 @@ import { useTranslations, useLocale } from "@/i18n/context";
  * - Uses RAF-throttle to batch scroll reads to one per frame.
  * - Explicit transition properties on the nav element.
  */
+const BG_TIMEZONES = ["Europe/Sofia"];
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [showLangSwitch, setShowLangSwitch] = useState(false);
   const dict = useTranslations();
   const locale = useLocale();
   const pathname = usePathname();
@@ -25,6 +28,18 @@ export default function Navbar() {
     // Set cookie so the middleware remembers the explicit choice
     document.cookie = `NEXT_LOCALE=${otherLocale};path=/;max-age=${60 * 60 * 24 * 365};samesite=lax`;
   }, [otherLocale]);
+
+  useEffect(() => {
+    // Only show the language switcher for users in Bulgaria (detected via timezone)
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (BG_TIMEZONES.includes(tz)) {
+        setShowLangSwitch(true);
+      }
+    } catch {
+      // Intl not supported — keep hidden
+    }
+  }, []);
 
   useEffect(() => {
     let rafId: number | null = null;
@@ -74,17 +89,19 @@ export default function Navbar() {
       </a>
 
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Language switcher — shows current locale flag, click to toggle */}
-        <a
-          href={switchedPath}
-          onClick={handleLangSwitch}
-          className="text-xl sm:text-2xl hover:scale-110 active:scale-95 rounded-full"
-          style={{ transition: "transform 0.2s ease" }}
-          title={locale === "bg" ? "Switch to English" : "Превключи на български"}
-          aria-label={locale === "bg" ? "Switch to English" : "Превключи на български"}
-        >
-          {locale === "bg" ? "🇺🇸" : "🇧🇬"}
-        </a>
+        {/* Language switcher — only visible for users in Bulgaria */}
+        {showLangSwitch && (
+          <a
+            href={switchedPath}
+            onClick={handleLangSwitch}
+            className="text-xl sm:text-2xl hover:scale-110 active:scale-95 rounded-full"
+            style={{ transition: "transform 0.2s ease" }}
+            title={locale === "bg" ? "Switch to English" : "Превключи на български"}
+            aria-label={locale === "bg" ? "Switch to English" : "Превключи на български"}
+          >
+            {locale === "bg" ? "🇺🇸" : "🇧🇬"}
+          </a>
+        )}
 
         <a
           href="#create-section"
