@@ -52,8 +52,12 @@ export default function RunawayButton({
   }, []);
 
   // Place the button to the right of center on mount
+  // Note: we intentionally don't check buttonRef here — the position is derived
+  // entirely from the container dimensions so the button doesn't need to be in
+  // the DOM yet.  This lets us delay rendering until position is known,
+  // preventing a visible "jump" from a CSS-fallback position to the real one.
   useEffect(() => {
-    if (!containerRef.current || !buttonRef.current || initialized) return;
+    if (!containerRef.current || initialized) return;
     const rect = containerRef.current.getBoundingClientRect();
 
     setPosition({
@@ -144,7 +148,9 @@ export default function RunawayButton({
     };
   }, [containerRef, moveAway, initialized, surrendered]);
 
-  if (hidden) return null;
+  // Don't render until position is calculated — avoids the visible "jump"
+  // from a CSS-fallback position to the computed pixel position.
+  if (hidden || !initialized) return null;
 
   const handleClick = () => {
     if (!surrendered) return;
@@ -185,11 +191,14 @@ export default function RunawayButton({
                    : "liquid-glass-gray text-gray-700 focus:ring-gray-400"
                  }`}
       style={{
-        left: position ? `${position.x}px` : `calc(50% + ${initialLeftOffset}px)`,
-        top: position ? `${position.y}px` : `${initialTopPercent}%`,
-        transform: position ? "none" : "translateY(-50%)",
+        left: `${position!.x}px`,
+        top: `${position!.y}px`,
         zIndex: 10,
-        transition: "left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.5s ease, color 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease",
+        // Only transition position after the first dodge so the initial
+        // placement is instant (no glitchy slide from a default position).
+        transition: dodgeCountRef.current > 0 || surrendered
+          ? "left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.5s ease, color 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease"
+          : "background 0.5s ease, color 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease",
         willChange: "left, top",
       }}
     >
