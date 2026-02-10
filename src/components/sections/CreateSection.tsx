@@ -2,6 +2,7 @@
 
 import CreateForm from "@/components/CreateForm";
 import ScrollReveal from "@/components/ScrollReveal";
+import { useTranslations } from "@/i18n/context";
 
 /**
  * Create invitation form section.
@@ -11,6 +12,8 @@ import ScrollReveal from "@/components/ScrollReveal";
  * - contain-intrinsic-size prevents layout shift when content becomes visible.
  */
 export default function CreateSection() {
+  const dict = useTranslations();
+
   return (
     <section
       id="create-section"
@@ -25,10 +28,10 @@ export default function CreateSection() {
           <div>
             <div className="inline-block text-4xl mb-3 animate-breathe">💌</div>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-3">
-              Създай своята покана
+              {dict.create.title}
             </h2>
             <p className="text-gray-500">
-              Попълни детайлите и получи уникален линк за твоята валентинка!
+              {dict.create.subtitle}
             </p>
           </div>
         </ScrollReveal>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
+import { useTranslations } from "@/i18n/context";
 
 /**
  * Hero section — the main landing view.
@@ -11,6 +12,8 @@ import { useCallback } from "react";
  * - No re-renders needed — scrollTo callbacks are stable via useCallback.
  */
 export default function HeroSection() {
+  const dict = useTranslations();
+
   const scrollToForm = useCallback(() => {
     document.getElementById("create-section")?.scrollIntoView({ behavior: "smooth" });
   }, []);
@@ -31,17 +34,16 @@ export default function HeroSection() {
 
         {/* Main heading with animated gradient */}
         <h1 className="hero-heading font-bold text-gray-800 animate-stagger-in stagger-2 !mt-0">
-          Искаш ли да направиш{" "}
+          {dict.hero.heading1}
           <span className="bg-gradient-to-r from-pink-500 via-rose-400 to-pink-600 bg-clip-text text-transparent animate-gradient-text">
-            предложение, на което не могат да ти откажат
+            {dict.hero.headingHighlight}
           </span>
           ?
         </h1>
 
         {/* Subtitle */}
         <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-md mx-auto animate-stagger-in stagger-3">
-          Създай персонализирана линк-покана, на която половинката ти
-          не може да каже &bdquo;не&ldquo;. Буквално. 😏
+          {dict.hero.subtitle}
         </p>
 
         {/* CTA buttons */}
@@ -53,7 +55,7 @@ export default function HeroSection() {
                        active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400
                        cursor-pointer animate-glow-pulse hover:scale-105"
           >
-            Създай своята сега 💌
+            {dict.hero.ctaPrimary}
           </button>
           <button
             onClick={scrollToDemo}
@@ -62,7 +64,7 @@ export default function HeroSection() {
                        focus:ring-2 focus:ring-pink-400 cursor-pointer hover:scale-105"
           >
             <span className="flex items-center gap-2">
-              Виж примерна покана
+              {dict.hero.ctaSecondary}
               <span
                 className="inline-block group-hover:translate-x-0.5 group-hover:scale-110"
                 style={{ transition: "transform 0.3s ease" }}
@@ -77,7 +79,7 @@ export default function HeroSection() {
       {/* Scroll indicator — pinned to bottom of hero */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 animate-stagger-in stagger-5">
         <div className="animate-bounce text-pink-300 text-2xl flex flex-col items-center gap-1">
-          <span className="text-xs tracking-widest uppercase text-gray-400 font-medium">Разгледай</span>
+          <span className="text-xs tracking-widest uppercase text-gray-400 font-medium">{dict.hero.scroll}</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 5v14M5 12l7 7 7-7"/>
           </svg>

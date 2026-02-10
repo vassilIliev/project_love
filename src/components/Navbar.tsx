@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { usePathname } from "next/navigation";
+import { useTranslations, useLocale } from "@/i18n/context";
 
 /**
  * Sticky navbar with scroll-aware background.
@@ -12,6 +14,17 @@ import { useEffect, useState, useCallback } from "react";
  */
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const dict = useTranslations();
+  const locale = useLocale();
+  const pathname = usePathname();
+
+  const otherLocale = locale === "bg" ? "en" : "bg";
+  const switchedPath = pathname.replace(/^\/(bg|en)/, `/${otherLocale}`);
+
+  const handleLangSwitch = useCallback(() => {
+    // Set cookie so the middleware remembers the explicit choice
+    document.cookie = `NEXT_LOCALE=${otherLocale};path=/;max-age=${60 * 60 * 24 * 365};samesite=lax`;
+  }, [otherLocale]);
 
   useEffect(() => {
     let rafId: number | null = null;
@@ -44,7 +57,7 @@ export default function Navbar() {
       }}
     >
       <a
-        href="/"
+        href={`/${locale}`}
         className="group text-lg font-bold text-pink-600 flex items-center gap-1.5"
         style={{ transition: "color 0.3s ease" }}
       >
@@ -52,20 +65,35 @@ export default function Navbar() {
           💝
         </span>
         <span className="relative">
-          datememaybe.net
+          {dict.nav.brand}
           <span
             className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full group-hover:w-full"
             style={{ transition: "width 0.3s ease" }}
           />
         </span>
       </a>
-      <a
-        href="#create-section"
-        className="liquid-glass liquid-glass-pink px-3 py-1.5 text-xs sm:px-5 sm:py-2 sm:text-sm font-medium text-white
-                   rounded-full active:scale-95 hover:scale-105"
-      >
-        Създай покана 💌
-      </a>
+
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Language switcher — shows current locale flag, click to toggle */}
+        <a
+          href={switchedPath}
+          onClick={handleLangSwitch}
+          className="text-xl sm:text-2xl hover:scale-110 active:scale-95 rounded-full"
+          style={{ transition: "transform 0.2s ease" }}
+          title={locale === "bg" ? "Switch to English" : "Превключи на български"}
+          aria-label={locale === "bg" ? "Switch to English" : "Превключи на български"}
+        >
+          {locale === "bg" ? "🇺🇸" : "🇧🇬"}
+        </a>
+
+        <a
+          href="#create-section"
+          className="liquid-glass liquid-glass-pink px-3 py-1.5 text-xs sm:px-5 sm:py-2 sm:text-sm font-medium text-white
+                     rounded-full active:scale-95 hover:scale-105"
+        >
+          {dict.nav.cta}
+        </a>
+      </div>
     </nav>
   );
 }

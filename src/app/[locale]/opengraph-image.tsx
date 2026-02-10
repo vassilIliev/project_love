@@ -1,12 +1,16 @@
 import { ImageResponse } from "next/og";
+import { getDictionary } from "@/i18n/dictionaries";
+import type { Locale } from "@/i18n/config";
 
 export const runtime = "edge";
 
-export const alt = "datememaybe.net — Покана за среща, на която не могат да ти откажат";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OGImage() {
+export default async function OGImage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const dict = getDictionary(locale as Locale);
+
   return new ImageResponse(
     (
       <div
@@ -81,7 +85,7 @@ export default function OGImage() {
               opacity: 0.9,
             }}
           >
-            Покана за среща, на която не могат да ти откажат 💕
+            {dict.og.subtitle}
           </p>
 
           {/* Pill badge */}

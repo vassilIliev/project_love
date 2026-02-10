@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 interface RunawayButtonProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
   label?: string;
+  yesLabel?: string;
   hidden?: boolean;
   initialTopPercent?: number;
   initialLeftOffset?: number;
@@ -29,6 +30,7 @@ interface RunawayButtonProps {
 export default function RunawayButton({
   containerRef,
   label = "NO",
+  yesLabel = "YES",
   hidden = false,
   initialTopPercent = 55,
   initialLeftOffset = 16,
@@ -52,10 +54,6 @@ export default function RunawayButton({
   }, []);
 
   // Place the button to the right of center on mount
-  // Note: we intentionally don't check buttonRef here — the position is derived
-  // entirely from the container dimensions so the button doesn't need to be in
-  // the DOM yet.  This lets us delay rendering until position is known,
-  // preventing a visible "jump" from a CSS-fallback position to the real one.
   useEffect(() => {
     if (!containerRef.current || initialized) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -135,7 +133,6 @@ export default function RunawayButton({
     const handleMouseMove = (e: MouseEvent) => {
       lastMouseX = e.clientX;
       lastMouseY = e.clientY;
-      // Throttle: only schedule one RAF per frame
       if (rafId === null) {
         rafId = requestAnimationFrame(checkDistance);
       }
@@ -148,18 +145,15 @@ export default function RunawayButton({
     };
   }, [containerRef, moveAway, initialized, surrendered]);
 
-  // Don't render until position is calculated — avoids the visible "jump"
-  // from a CSS-fallback position to the computed pixel position.
+  // Don't render until position is calculated
   if (hidden || !initialized) return null;
 
   const handleClick = () => {
     if (!surrendered) return;
 
     if (!turnedYes) {
-      // First click: turn into YES
       setTurnedYes(true);
     } else {
-      // Second click: act as YES — fire confetti & reveal
       onSurrender?.();
     }
   };
@@ -167,7 +161,7 @@ export default function RunawayButton({
   return (
     <button
       ref={buttonRef}
-      aria-label={turnedYes ? "ДА button" : `${label} button`}
+      aria-label={turnedYes ? `${yesLabel} button` : `${label} button`}
       onMouseEnter={surrendered ? undefined : moveAway}
       onMouseDown={(e) => {
         if (!surrendered) {
@@ -194,15 +188,13 @@ export default function RunawayButton({
         left: `${position!.x}px`,
         top: `${position!.y}px`,
         zIndex: 10,
-        // Only transition position after the first dodge so the initial
-        // placement is instant (no glitchy slide from a default position).
         transition: dodgeCountRef.current > 0 || surrendered
           ? "left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.5s ease, color 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease"
           : "background 0.5s ease, color 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease",
         willChange: "left, top",
       }}
     >
-      {turnedYes ? "ДА" : label}
+      {turnedYes ? yesLabel : label}
     </button>
   );
 }

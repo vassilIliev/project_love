@@ -1,6 +1,12 @@
-import Link from "next/link";
+"use client";
 
-export default function CancelPage() {
+import Link from "next/link";
+import { useTranslations, useLocale } from "@/i18n/context";
+
+export default function InvitationNotFound() {
+  const dict = useTranslations();
+  const locale = useLocale();
+
   return (
     <main className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
       {/* Subtle background glow */}
@@ -14,20 +20,19 @@ export default function CancelPage() {
       <div className="text-center space-y-6 max-w-md relative z-10">
         <div className="text-6xl animate-gentle-float animate-stagger-in stagger-1">💔</div>
         <h1 className="text-3xl font-bold text-gray-800 animate-stagger-in stagger-2">
-          Плащането е отменено
+          {dict.notFound.title}
         </h1>
         <p className="text-gray-500 animate-stagger-in stagger-3">
-          Няма проблем! Поканата ти все още не е създадена. Можеш
-          да опиташ отново, когато си готов/а.
+          {dict.notFound.description}
         </p>
         <div className="animate-stagger-in stagger-4">
           <Link
-            href="/"
+            href={`/${locale}`}
             className="liquid-glass liquid-glass-pink inline-block px-8 py-3 text-white
                        font-semibold rounded-full
                        hover:scale-105 active:scale-95"
           >
-            Обратно към началото 💕
+            {dict.notFound.createYours}
           </Link>
         </div>
       </div>

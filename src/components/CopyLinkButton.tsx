@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "@/i18n/context";
 
 interface CopyLinkButtonProps {
   link: string;
@@ -8,6 +9,7 @@ interface CopyLinkButtonProps {
 
 export default function CopyLinkButton({ link }: CopyLinkButtonProps) {
   const [copied, setCopied] = useState(false);
+  const dict = useTranslations();
 
   const handleCopy = async () => {
     try {
@@ -15,7 +17,7 @@ export default function CopyLinkButton({ link }: CopyLinkButtonProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Резервен метод за по-стари браузъри
+      // Fallback for older browsers
       const textarea = document.createElement("textarea");
       textarea.value = link;
       document.body.appendChild(textarea);
@@ -30,7 +32,7 @@ export default function CopyLinkButton({ link }: CopyLinkButtonProps) {
   return (
     <button
       onClick={handleCopy}
-      aria-label="Копирай линка"
+      aria-label={dict.copy.ariaLabel}
       className={`shrink-0 px-4 py-2 text-white text-sm font-medium
                  rounded-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400
                  cursor-pointer hover:scale-105
@@ -45,10 +47,10 @@ export default function CopyLinkButton({ link }: CopyLinkButtonProps) {
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
-          Копирано!
+          {dict.copy.copied}
         </span>
       ) : (
-        "Копирай 📋"
+        dict.copy.copy
       )}
     </button>
   );

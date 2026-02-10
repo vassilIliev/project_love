@@ -4,6 +4,7 @@ import { useRef, useState, useMemo, useCallback, useEffect } from "react";
 import confetti from "canvas-confetti";
 import ConfettiButton from "./ConfettiButton";
 import RunawayButton from "./RunawayButton";
+import { useTranslations } from "@/i18n/context";
 
 interface InvitationCardProps {
   recipientName: string;
@@ -47,6 +48,7 @@ export default function InvitationCard({
   const [showMessage, setShowMessage] = useState(false);
   const rafRef = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dict = useTranslations();
 
   const hearts = useMemo(() => generateHearts(recipientName), [recipientName]);
 
@@ -157,7 +159,7 @@ export default function InvitationCard({
         }}
       />
 
-      {/* Въпрос — вертикално центриран в горната половина */}
+      {/* Question — vertically centered in the top half */}
       <div
         className={`absolute left-0 right-0 text-center z-10 px-4 sm:px-6
                     ${showMessage ? "opacity-0 pointer-events-none scale-95" : "opacity-100"}`}
@@ -167,12 +169,12 @@ export default function InvitationCard({
           <span className="text-pink-600 break-words">{recipientName}</span>,
           <br />
           <span className="animate-stagger-in stagger-2 inline-block">
-            ще излезеш ли на среща с мен?
+            {dict.invitation.question}
           </span>
         </h2>
       </div>
 
-      {/* ДА — статичен, леко вляво от центъра, вертикално на 50% */}
+      {/* YES — static, slightly left of center, vertically at 50% */}
       <div
         className={`absolute z-20
                     ${showMessage ? "opacity-0 pointer-events-none scale-90" : "opacity-100"}`}
@@ -183,31 +185,32 @@ export default function InvitationCard({
           transition: "opacity 0.7s ease, transform 0.7s ease",
         }}
       >
-        <ConfettiButton label="ДА" onConfirm={handleConfirm} />
+        <ConfettiButton label={dict.invitation.yes} onConfirm={handleConfirm} />
       </div>
 
-      {/* НЕ — стартира леко вдясно от центъра, бяга при приближаване */}
+      {/* NO — starts slightly right of center, runs away on approach */}
       <RunawayButton
         containerRef={containerRef}
-        label="НЕ"
+        label={dict.invitation.no}
+        yesLabel={dict.invitation.yes}
         hidden={showMessage}
         initialTopPercent={50}
         initialLeftOffset={12}
         onSurrender={fireConfettiAndReveal}
       />
 
-      {/* Разкрито съобщение — staggered reveal */}
+      {/* Revealed message — staggered reveal */}
       {showMessage && (
         <div className="absolute inset-0 flex items-center justify-center z-20 px-4 sm:px-6">
           <div className="text-center space-y-3 sm:space-y-4 w-full max-w-[90vw] sm:max-w-lg">
             <p className="text-2xl sm:text-3xl md:text-5xl font-bold text-pink-600 animate-reveal-item" style={{ animationDelay: "0s" }}>
-              Ураа! 🎉
+              {dict.invitation.hooray}
             </p>
 
             {time && (
               <div className="flex items-center justify-center gap-2 text-gray-700 animate-reveal-item" style={{ animationDelay: "0.2s" }}>
                 <p className="text-base sm:text-xl md:text-2xl break-words overflow-wrap-anywhere">
-                  <span className="font-medium">🕐 Дата и час:</span> {time}
+                  <span className="font-medium">{dict.invitation.dateTime}</span> {time}
                 </p>
               </div>
             )}
@@ -215,7 +218,7 @@ export default function InvitationCard({
             {place && (
               <div className="flex items-center justify-center gap-2 text-gray-700 animate-reveal-item" style={{ animationDelay: "0.35s" }}>
                 <p className="text-base sm:text-xl md:text-2xl break-words overflow-wrap-anywhere">
-                  <span className="font-medium">📍 Място:</span> {place}
+                  <span className="font-medium">{dict.invitation.place}</span> {place}
                 </p>
               </div>
             )}
@@ -233,7 +236,7 @@ export default function InvitationCard({
               className="pt-2 sm:pt-3 text-sm sm:text-base text-gray-500 font-medium animate-reveal-item"
               style={{ animationDelay: `${0.3 + detailItems.length * 0.15 + 0.15}s` }}
             >
-              ✨ Ще се видим там! ✨
+              {dict.invitation.seeYou}
             </div>
 
           </div>

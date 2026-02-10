@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { useTranslations, useLocale } from "@/i18n/context";
 
 const LIMITS = {
   recipientName: 50,
@@ -25,6 +26,9 @@ export default function CreateForm() {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldName, boolean>>>({});
   const [focusedField, setFocusedField] = useState<FieldName | null>(null);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const dict = useTranslations();
+  const locale = useLocale();
 
   // Reset loading state when user navigates back (e.g. from Stripe checkout).
   // The "pageshow" event fires on back/forward navigation, including bfcache restores.
@@ -57,10 +61,11 @@ export default function CreateForm() {
       time: (fd.get("time") as string)?.trim() || undefined,
       place: (fd.get("place") as string)?.trim() || undefined,
       extraMessage: (fd.get("extraMessage") as string)?.trim() || undefined,
+      locale,
     };
 
     if (!data.recipientName) {
-      setError("Моля, въведи име на получателя.");
+      setError(dict.form.requiredError);
       setLoading(false);
       return;
     }
@@ -75,7 +80,7 @@ export default function CreateForm() {
       const json = await res.json();
 
       if (!res.ok) {
-        setError(json.error || "Нещо се обърка. Моля, опитай отново.");
+        setError(json.error || dict.form.genericError);
         setLoading(false);
         return;
       }
@@ -84,14 +89,14 @@ export default function CreateForm() {
         window.location.href = json.url;
       }
     } catch {
-      setError("Мрежова грешка. Моля, опитай отново.");
+      setError(dict.form.networkError);
       setLoading(false);
     }
-  }, []);
+  }, [locale, dict]);
 
   const fieldErrorMsg = (field: FieldName) =>
     fieldErrors[field] ? (
-      <p className="text-red-500 text-xs mt-1 animate-fade-in">Максимум {LIMITS[field]} символа.</p>
+      <p className="text-red-500 text-xs mt-1 animate-fade-in">{dict.form.maxChars.replace("{n}", String(LIMITS[field]))}</p>
     ) : null;
 
   const inputClass = (field: FieldName) =>
@@ -104,10 +109,65 @@ export default function CreateForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5 w-full max-w-md mx-auto">
+      {/* Privacy notice */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setShowPrivacy((v) => !v)}
+          className="flex items-center gap-2 mx-auto px-3.5 py-1.5 rounded-full
+                     bg-emerald-50 border border-emerald-200/60 text-emerald-700
+                     hover:bg-emerald-100/80 active:scale-[0.97] cursor-pointer
+                     group"
+          style={{ transition: "background 0.2s ease, transform 0.1s ease" }}
+          aria-expanded={showPrivacy}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-emerald-600 shrink-0"
+          >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          <span className="text-xs font-semibold">{dict.form.privacyLabel}</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`text-emerald-500 shrink-0 ${showPrivacy ? "rotate-180" : ""}`}
+            style={{ transition: "transform 0.25s ease" }}
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+
+        <div
+          className={`overflow-hidden ${showPrivacy ? "max-h-64 opacity-100 mt-3" : "max-h-0 opacity-0 mt-0"}`}
+          style={{ transition: "max-height 0.35s ease, opacity 0.3s ease, margin 0.3s ease" }}
+        >
+          <div className="bg-emerald-50/70 border border-emerald-200/50 rounded-xl px-4 py-3 text-xs text-emerald-800 leading-relaxed text-left space-y-2">
+            <p>{dict.form.privacyTooltip}</p>
+            <p>{dict.form.disclaimer}</p>
+          </div>
+        </div>
+      </div>
+
       {/* Recipient name */}
       <div className="group">
         <label htmlFor="recipientName" className="block text-sm font-medium text-gray-700 mb-1.5 text-left group-focus-within:text-pink-600" style={{ transition: "color 0.2s ease" }}>
-          Име на получателя <span className="text-pink-500">*</span>
+          {dict.form.recipientLabel} <span className="text-pink-500">*</span>
         </label>
         <input
           id="recipientName"
@@ -116,7 +176,7 @@ export default function CreateForm() {
           required
           maxLength={LIMITS.recipientName}
           autoComplete="off"
-          placeholder="Напр. Маги"
+          placeholder={dict.form.recipientPlaceholder}
           onFocus={() => setFocusedField("recipientName")}
           onBlur={() => setFocusedField(null)}
           onChange={(e) => handleChange("recipientName", e.target.value)}
@@ -128,7 +188,7 @@ export default function CreateForm() {
       {/* Time */}
       <div className="group">
         <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1.5 text-left group-focus-within:text-pink-600" style={{ transition: "color 0.2s ease" }}>
-          Дата и час
+          {dict.form.timeLabel}
         </label>
         <input
           id="time"
@@ -136,7 +196,7 @@ export default function CreateForm() {
           type="text"
           maxLength={LIMITS.time}
           autoComplete="off"
-          placeholder="Напр. 14.02 в 19:30"
+          placeholder={dict.form.timePlaceholder}
           onFocus={() => setFocusedField("time")}
           onBlur={() => setFocusedField(null)}
           onChange={(e) => handleChange("time", e.target.value)}
@@ -148,7 +208,7 @@ export default function CreateForm() {
       {/* Place */}
       <div className="group">
         <label htmlFor="place" className="block text-sm font-medium text-gray-700 mb-1.5 text-left group-focus-within:text-pink-600" style={{ transition: "color 0.2s ease" }}>
-          Място
+          {dict.form.placeLabel}
         </label>
         <input
           id="place"
@@ -156,7 +216,7 @@ export default function CreateForm() {
           type="text"
           maxLength={LIMITS.place}
           autoComplete="off"
-          placeholder="Напр. В италианския ресторант"
+          placeholder={dict.form.placePlaceholder}
           onFocus={() => setFocusedField("place")}
           onBlur={() => setFocusedField(null)}
           onChange={(e) => handleChange("place", e.target.value)}
@@ -168,7 +228,7 @@ export default function CreateForm() {
       {/* Extra message */}
       <div className="group">
         <label htmlFor="extraMessage" className="block text-sm font-medium text-gray-700 mb-1.5 text-left group-focus-within:text-pink-600" style={{ transition: "color 0.2s ease" }}>
-          Допълнително съобщение
+          {dict.form.messageLabel}
         </label>
         <textarea
           id="extraMessage"
@@ -176,7 +236,7 @@ export default function CreateForm() {
           maxLength={LIMITS.extraMessage}
           rows={3}
           autoComplete="off"
-          placeholder="Напр. Облечи нещо топло 💘"
+          placeholder={dict.form.messagePlaceholder}
           onFocus={() => setFocusedField("extraMessage")}
           onBlur={() => setFocusedField(null)}
           onChange={(e) => handleChange("extraMessage", e.target.value)}
@@ -207,18 +267,18 @@ export default function CreateForm() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            Пренасочване към плащане...
+            {dict.form.submitting}
           </span>
         ) : (
           <span className="flex items-center justify-center gap-2">
-            Създай и плати €1.99
+            {dict.form.submit}
             <span className="text-lg">💝</span>
           </span>
         )}
       </button>
 
       <p className="text-xs text-center text-gray-400 leading-relaxed">
-        Ще бъдете пренасочен/а към Stripe за сигурно плащане. Имейлът Ви няма да бъде използван за маркетинг и няма да получавате рекламни съобщения.
+        {dict.form.disclaimer}
       </p>
     </form>
   );

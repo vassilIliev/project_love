@@ -1,15 +1,18 @@
 "use client";
 
 import InvitationCard from "@/components/InvitationCard";
+import { useTranslations } from "@/i18n/context";
 
 export default function DemoSection() {
+  const dict = useTranslations();
+
   return (
     <section id="demo-section">
       <InvitationCard
-        recipientName="Маги"
-        time="14.02 19:30"
-        place="В италианския ресторант"
-        extraMessage="Облечи нещо топло 💘"
+        recipientName={dict.demo.recipientName}
+        time={dict.demo.time}
+        place={dict.demo.place}
+        extraMessage={dict.demo.extraMessage}
         isDemo={true}
         fullScreen={true}
       />

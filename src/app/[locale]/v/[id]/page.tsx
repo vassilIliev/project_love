@@ -3,7 +3,7 @@ import { decodeInvitation } from "@/lib/invitation-codec";
 import InvitationCard from "@/components/InvitationCard";
 
 interface InvitationPageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }
 
 export default async function InvitationPage({ params }: InvitationPageProps) {
