@@ -7,7 +7,7 @@ export default function DemoSection() {
     <section id="demo-section">
       <InvitationCard
         recipientName="Маги"
-        time="19:30"
+        time="14.02 19:30"
         place="В италианския ресторант"
         extraMessage="Облечи нещо топло 💘"
         isDemo={true}

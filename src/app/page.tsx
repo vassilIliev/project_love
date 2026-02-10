@@ -14,8 +14,17 @@ export default function HomePage() {
         <DemoSection />
         <CreateSection />
         {/* Футър */}
-        <footer className="py-8 text-center text-sm text-gray-400">
-          <p>Направено с 💕 — Date Me Maybe {new Date().getFullYear()}</p>
+        <footer className="py-10 text-center relative">
+          <div className="max-w-md mx-auto space-y-3">
+            <div className="flex items-center justify-center gap-2">
+              <div className="h-px w-12 bg-gradient-to-r from-transparent to-pink-200" />
+              <span className="text-pink-300 text-sm">💕</span>
+              <div className="h-px w-12 bg-gradient-to-l from-transparent to-pink-200" />
+            </div>
+            <p className="text-sm text-gray-400">
+              Направено с любов — Date Me Maybe {new Date().getFullYear()}
+            </p>
+          </div>
         </footer>
       </div>
     </main>

@@ -18,42 +18,9 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Floating hearts animation for the background */
-@keyframes float-up {
-  0% {
-    transform: translateY(100vh) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.6;
-  }
-  90% {
-    opacity: 0.4;
-  }
-  100% {
-    transform: translateY(-10vh) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-.animate-float-heart {
-  animation: float-up linear infinite;
-}
-
-/* Fade-in for revealed message */
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.7s ease-out both;
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
 }
 
 /* Word break utility for long text on small screens */
@@ -62,7 +29,608 @@ body {
   word-break: break-word;
 }
 
-/* Smooth scroll */
-html {
-  scroll-behavior: smooth;
+/* ═══════════════════════════════════════════════════
+   FLOATING HEARTS — float up with gentle horizontal sway
+   ═══════════════════════════════════════════════════ */
+@keyframes float-up {
+  0% {
+    transform: translateY(100vh) translateX(0) rotate(0deg) scale(0.7);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.5;
+  }
+  25% {
+    transform: translateY(75vh) translateX(15px) rotate(90deg) scale(1);
+  }
+  50% {
+    transform: translateY(50vh) translateX(-15px) rotate(180deg) scale(0.9);
+  }
+  75% {
+    transform: translateY(25vh) translateX(10px) rotate(270deg) scale(1);
+  }
+  90% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translateY(-10vh) translateX(-5px) rotate(360deg) scale(0.7);
+    opacity: 0;
+  }
+}
+
+.animate-float-heart {
+  animation: float-up linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   FADE-IN — used for revealed messages
+   ═══════════════════════════════════════════════════ */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ═══════════════════════════════════════════════════
+   STAGGER FADE-IN — for sequenced element entrances
+   ═══════════════════════════════════════════════════ */
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.animate-stagger-in {
+  animation: stagger-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.15s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.45s; }
+.stagger-5 { animation-delay: 0.6s; }
+
+/* ═══════════════════════════════════════════════════
+   SCROLL-REVEAL — elements that appear on scroll
+   ═══════════════════════════════════════════════════ */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.scroll-reveal {
+  opacity: 0;
+}
+
+.scroll-reveal.revealed {
+  animation: reveal-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ═══════════════════════════════════════════════════
+   ANIMATED GRADIENT TEXT — living color shift
+   ═══════════════════════════════════════════════════ */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-text {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   BREATHING PULSE — gentle scale for emojis/icons
+   ═══════════════════════════════════════════════════ */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   GLOW PULSE — soft glow behind CTA buttons
+   ═══════════════════════════════════════════════════ */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.3), 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(236, 72, 153, 0.5), 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   SHIMMER — sliding light effect on buttons
+   ═══════════════════════════════════════════════════ */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.shimmer-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.3) 45%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.3) 55%,
+    transparent 60%
+  );
+  animation: shimmer 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   INVITATION CARD — animated gradient background
+   ═══════════════════════════════════════════════════ */
+@keyframes bg-drift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 0%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 100%;
+  }
+}
+
+.animate-bg-drift {
+  background-size: 300% 300%;
+  animation: bg-drift 12s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   SVG HEART FLOAT — invitation card background hearts
+   ═══════════════════════════════════════════════════ */
+@keyframes heart-drift {
+  0%, 100% {
+    transform: rotate(var(--heart-rotation)) translateY(0) scale(1);
+    opacity: var(--heart-opacity);
+  }
+  33% {
+    transform: rotate(calc(var(--heart-rotation) + 8deg)) translateY(-8px) scale(1.05);
+  }
+  66% {
+    transform: rotate(calc(var(--heart-rotation) - 5deg)) translateY(5px) scale(0.97);
+  }
+}
+
+.animate-heart-drift {
+  animation: heart-drift var(--heart-duration, 6s) ease-in-out infinite;
+  animation-delay: var(--heart-delay, 0s);
+}
+
+/* ═══════════════════════════════════════════════════
+   REVEAL SEQUENCE — staggered reveal for invitation message
+   ═══════════════════════════════════════════════════ */
+@keyframes reveal-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(15px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+.animate-reveal-item {
+  animation: reveal-scale 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ═══════════════════════════════════════════════════
+   SPARKLE — small sparkle burst effect
+   ═══════════════════════════════════════════════════ */
+@keyframes sparkle {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(360deg);
+  }
+}
+
+.animate-sparkle {
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   NAVBAR — subtle border glow
+   ═══════════════════════════════════════════════════ */
+@keyframes nav-glow {
+  0%, 100% {
+    border-color: rgba(251, 207, 232, 0.5);
+  }
+  33% {
+    border-color: rgba(236, 72, 153, 0.35);
+  }
+  66% {
+    border-color: rgba(244, 114, 182, 0.4);
+  }
+}
+
+.animate-nav-border {
+  animation: nav-glow 4s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   INPUT FOCUS — elegant underline expand
+   ═══════════════════════════════════════════════════ */
+.input-glow {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.input-glow:focus {
+  border-color: #ec4899;
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.12), 0 2px 8px rgba(236, 72, 153, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════
+   CELEBRATION BOUNCE — success page
+   ═══════════════════════════════════════════════════ */
+@keyframes celebrate-bounce {
+  0%, 20%, 53%, 100% {
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+    transform: translate3d(0, -20px, 0) scale(1.05);
+  }
+  70% {
+    animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+    transform: translate3d(0, -10px, 0);
+  }
+  80% {
+    transform: translate3d(0, 0, 0) scale(0.98);
+  }
+  90% {
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
+.animate-celebrate {
+  animation: celebrate-bounce 1.2s both;
+}
+
+/* ═══════════════════════════════════════════════════
+   GENTLE FLOAT — for page icons/emojis
+   ═══════════════════════════════════════════════════ */
+@keyframes gentle-float {
+  0%, 100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+}
+
+.animate-gentle-float {
+  animation: gentle-float 3.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   MAGNETIC HOVER — for interactive cards
+   ═══════════════════════════════════════════════════ */
+.magnetic-hover {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), 
+              box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.magnetic-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(236, 72, 153, 0.15), 0 8px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* ═══════════════════════════════════════════════════
+   PARTICLE RING — decorative ring behind emojis
+   ═══════════════════════════════════════════════════ */
+@keyframes ring-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ring-pulse {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.08); }
+}
+
+.emoji-ring {
+  position: relative;
+  display: inline-block;
+}
+
+.emoji-ring::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 130%;
+  height: 130%;
+  transform: translate(-50%, -50%);
+  border: 2px dashed rgba(236, 72, 153, 0.2);
+  border-radius: 50%;
+  animation: ring-rotate 20s linear infinite, ring-pulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   LIQUID GLASS — translucent frosted glass buttons
+   Inspired by Apple's liquid glass design language.
+   Uses layered backdrop-blur, gradient borders,
+   inner light reflections, and organic hover morphs.
+   ═══════════════════════════════════════════════════ */
+
+/* Keyframes for the liquid glass inner shine sweep */
+@keyframes liquid-shine {
+  0% {
+    transform: translateX(-120%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(120%) skewX(-15deg);
+  }
+}
+
+/* Gentle border shimmer for the glass edge */
+@keyframes glass-border-shift {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* ─── Base liquid glass ─── */
+.liquid-glass {
+  position: relative;
+  isolation: isolate;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Inner shine — top highlight reflection */
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.08) 60%,
+    transparent 100%
+  );
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.4s ease;
+}
+
+/* Sweeping light reflection */
+.liquid-glass::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.15) 45%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.15) 55%,
+    transparent 80%
+  );
+  animation: liquid-shine 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.liquid-glass:hover {
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.liquid-glass:hover::before {
+  opacity: 0.8;
+}
+
+/* ─── Pink variant (primary CTAs) ─── */
+.liquid-glass-pink {
+  background: linear-gradient(
+    135deg,
+    rgba(236, 72, 153, 0.82) 0%,
+    rgba(219, 39, 100, 0.78) 50%,
+    rgba(244, 114, 182, 0.8) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow:
+    0 4px 24px rgba(236, 72, 153, 0.35),
+    0 1px 4px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.liquid-glass-pink:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(236, 72, 153, 0.92) 0%,
+    rgba(219, 39, 100, 0.88) 50%,
+    rgba(244, 114, 182, 0.9) 100%
+  );
+  box-shadow:
+    0 8px 36px rgba(236, 72, 153, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* ─── Light variant (secondary / outline buttons) ─── */
+.liquid-glass-light {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(252, 231, 243, 0.55) 50%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  border-color: rgba(236, 72, 153, 0.3);
+  box-shadow:
+    0 4px 18px rgba(236, 72, 153, 0.14),
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.liquid-glass-light:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(252, 231, 243, 0.7) 50%,
+    rgba(255, 255, 255, 0.75) 100%
+  );
+  border-color: rgba(236, 72, 153, 0.45);
+  box-shadow:
+    0 8px 28px rgba(236, 72, 153, 0.2),
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* ─── Gray variant (NO button) ─── */
+.liquid-glass-gray {
+  background: linear-gradient(
+    135deg,
+    rgba(229, 231, 235, 0.78) 0%,
+    rgba(209, 213, 219, 0.72) 50%,
+    rgba(229, 231, 235, 0.75) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 4px 18px rgba(107, 114, 128, 0.22),
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.liquid-glass-gray:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(229, 231, 235, 0.88) 0%,
+    rgba(209, 213, 219, 0.82) 50%,
+    rgba(229, 231, 235, 0.85) 100%
+  );
+  box-shadow:
+    0 8px 28px rgba(107, 114, 128, 0.28),
+    0 2px 6px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* ─── Small variant (for compact buttons like Copy) ─── */
+.liquid-glass-sm::before {
+  height: 45%;
+}
+
+.liquid-glass-sm::after {
+  width: 50%;
+  animation-duration: 3s;
+}
+
+/* ─── Green variant (for copied state) ─── */
+.liquid-glass-green {
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.8) 0%,
+    rgba(22, 163, 74, 0.75) 50%,
+    rgba(74, 222, 128, 0.78) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow:
+    0 4px 22px rgba(34, 197, 94, 0.35),
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+/* ─── Override: remove old shimmer from liquid glass buttons ─── */
+.liquid-glass.shimmer-btn::after {
+  /* liquid-glass already has its own ::after sweep — disable shimmer's */
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.15) 45%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.15) 55%,
+    transparent 80%
+  );
+  animation: liquid-shine 4s ease-in-out infinite;
 }

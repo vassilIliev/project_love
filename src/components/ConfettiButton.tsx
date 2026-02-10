@@ -9,7 +9,8 @@ interface ConfettiButtonProps {
 }
 
 /**
- * The YES button. On click, fires confetti and calls onConfirm.
+ * The YES button. On click, fires a dramatic confetti celebration and calls onConfirm.
+ * Features a pulsing glow and shimmer to draw attention.
  */
 export default function ConfettiButton({
   label = "YES",
@@ -22,23 +23,23 @@ export default function ConfettiButton({
     setClicked(true);
 
     // Fire confetti from multiple angles
-    const duration = 2500;
+    const duration = 3000;
     const end = Date.now() + duration;
 
     const frame = () => {
       confetti({
-        particleCount: 5,
+        particleCount: 4,
         angle: 60,
-        spread: 55,
+        spread: 60,
         origin: { x: 0, y: 0.7 },
-        colors: ["#ff69b4", "#ff1493", "#ff6b6b", "#ffd700", "#ff4500"],
+        colors: ["#ff69b4", "#ff1493", "#ff6b6b", "#ffd700", "#ff4500", "#e879f9", "#c084fc"],
       });
       confetti({
-        particleCount: 5,
+        particleCount: 4,
         angle: 120,
-        spread: 55,
+        spread: 60,
         origin: { x: 1, y: 0.7 },
-        colors: ["#ff69b4", "#ff1493", "#ff6b6b", "#ffd700", "#ff4500"],
+        colors: ["#ff69b4", "#ff1493", "#ff6b6b", "#ffd700", "#ff4500", "#e879f9", "#c084fc"],
       });
 
       if (Date.now() < end) {
@@ -49,11 +50,22 @@ export default function ConfettiButton({
 
     // Big center burst
     confetti({
-      particleCount: 150,
-      spread: 120,
+      particleCount: 180,
+      spread: 140,
       origin: { y: 0.55 },
-      colors: ["#ff69b4", "#ff1493", "#ff6b6b", "#ffd700", "#ff4500", "#e91e63"],
+      colors: ["#ff69b4", "#ff1493", "#ff6b6b", "#ffd700", "#ff4500", "#e91e63", "#e879f9", "#c084fc"],
     });
+
+    // Delayed secondary burst for extra drama
+    setTimeout(() => {
+      confetti({
+        particleCount: 80,
+        spread: 100,
+        origin: { y: 0.4, x: 0.5 },
+        colors: ["#fbbf24", "#f472b6", "#a78bfa", "#fb923c"],
+        scalar: 1.2,
+      });
+    }, 400);
 
     onConfirm();
   };
@@ -63,10 +75,13 @@ export default function ConfettiButton({
       aria-label={`${label} button`}
       onClick={handleClick}
       disabled={clicked}
-      className="relative z-20 px-16 py-5 bg-pink-500 hover:bg-pink-600
-                 text-white font-bold rounded-full transition-all duration-200
-                 shadow-lg hover:shadow-2xl active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-300
-                 text-3xl disabled:opacity-80 cursor-pointer"
+      className={`liquid-glass liquid-glass-pink relative z-20 px-16 py-5
+                 text-white font-bold rounded-full transition-all duration-300
+                 active:scale-95
+                 focus:outline-none focus:ring-2 focus:ring-pink-300
+                 text-3xl disabled:opacity-80 cursor-pointer
+                 hover:scale-105
+                 ${!clicked ? "animate-glow-pulse" : ""}`}
     >
       {label}
     </button>

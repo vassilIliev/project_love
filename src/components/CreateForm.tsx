@@ -20,6 +20,7 @@ export default function CreateForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldName, boolean>>>({});
+  const [focusedField, setFocusedField] = useState<FieldName | null>(null);
 
   const handleChange = (field: FieldName, value: string) => {
     if (value.length >= LIMITS[field]) {
@@ -74,14 +75,22 @@ export default function CreateForm() {
 
   const fieldErrorMsg = (field: FieldName) =>
     fieldErrors[field] ? (
-      <p className="text-red-500 text-xs mt-1">Максимум {LIMITS[field]} символа.</p>
+      <p className="text-red-500 text-xs mt-1 animate-fade-in">Максимум {LIMITS[field]} символа.</p>
     ) : null;
+
+  const inputClass = (field: FieldName) =>
+    `w-full px-4 py-3 rounded-xl border transition-all duration-300 text-gray-800 bg-white placeholder-gray-400
+     outline-none input-glow
+     ${focusedField === field
+       ? "border-pink-400 ring-2 ring-pink-200/60 shadow-md shadow-pink-100/30"
+       : "border-gray-200 hover:border-pink-200"
+     }`;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5 w-full max-w-md mx-auto">
       {/* Recipient name */}
-      <div>
-        <label htmlFor="recipientName" className="block text-sm font-medium text-gray-700 mb-1 text-left">
+      <div className="group">
+        <label htmlFor="recipientName" className="block text-sm font-medium text-gray-700 mb-1.5 text-left transition-colors duration-200 group-focus-within:text-pink-600">
           Име на получателя <span className="text-pink-500">*</span>
         </label>
         <input
@@ -91,17 +100,19 @@ export default function CreateForm() {
           required
           maxLength={LIMITS.recipientName}
           autoComplete="off"
+          placeholder="Напр. Маги"
+          onFocus={() => setFocusedField("recipientName")}
+          onBlur={() => setFocusedField(null)}
           onChange={(e) => handleChange("recipientName", e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-200
-                     outline-none transition-all text-gray-800 bg-white placeholder-gray-400"
+          className={inputClass("recipientName")}
         />
         {fieldErrorMsg("recipientName")}
       </div>
 
       {/* Time */}
-      <div>
-        <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1 text-left">
-          Час
+      <div className="group">
+        <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1.5 text-left transition-colors duration-200 group-focus-within:text-pink-600">
+          Дата и час
         </label>
         <input
           id="time"
@@ -109,16 +120,18 @@ export default function CreateForm() {
           type="text"
           maxLength={LIMITS.time}
           autoComplete="off"
+          placeholder="Напр. 14.02 в 19:30"
+          onFocus={() => setFocusedField("time")}
+          onBlur={() => setFocusedField(null)}
           onChange={(e) => handleChange("time", e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-200
-                     outline-none transition-all text-gray-800 bg-white placeholder-gray-400"
+          className={inputClass("time")}
         />
         {fieldErrorMsg("time")}
       </div>
 
       {/* Place */}
-      <div>
-        <label htmlFor="place" className="block text-sm font-medium text-gray-700 mb-1 text-left">
+      <div className="group">
+        <label htmlFor="place" className="block text-sm font-medium text-gray-700 mb-1.5 text-left transition-colors duration-200 group-focus-within:text-pink-600">
           Място
         </label>
         <input
@@ -127,16 +140,18 @@ export default function CreateForm() {
           type="text"
           maxLength={LIMITS.place}
           autoComplete="off"
+          placeholder="Напр. В италианския ресторант"
+          onFocus={() => setFocusedField("place")}
+          onBlur={() => setFocusedField(null)}
           onChange={(e) => handleChange("place", e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-200
-                     outline-none transition-all text-gray-800 bg-white placeholder-gray-400"
+          className={inputClass("place")}
         />
         {fieldErrorMsg("place")}
       </div>
 
       {/* Extra message */}
-      <div>
-        <label htmlFor="extraMessage" className="block text-sm font-medium text-gray-700 mb-1 text-left">
+      <div className="group">
+        <label htmlFor="extraMessage" className="block text-sm font-medium text-gray-700 mb-1.5 text-left transition-colors duration-200 group-focus-within:text-pink-600">
           Допълнително съобщение
         </label>
         <textarea
@@ -145,26 +160,30 @@ export default function CreateForm() {
           maxLength={LIMITS.extraMessage}
           rows={3}
           autoComplete="off"
+          placeholder="Напр. Облечи нещо топло 💘"
+          onFocus={() => setFocusedField("extraMessage")}
+          onBlur={() => setFocusedField(null)}
           onChange={(e) => handleChange("extraMessage", e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-200
-                     outline-none transition-all text-gray-800 bg-white placeholder-gray-400 resize-none"
+          className={`${inputClass("extraMessage")} resize-none`}
         />
         {fieldErrorMsg("extraMessage")}
       </div>
 
       {/* Error */}
       {error && (
-        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm">{error}</div>
+        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm animate-fade-in border border-red-100">
+          {error}
+        </div>
       )}
 
       {/* Submit */}
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-3 px-6 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600
-                   text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl
+        className="liquid-glass liquid-glass-pink w-full py-3.5 px-6
+                   text-white font-semibold rounded-xl transition-all duration-300
                    disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-pink-400
-                   active:scale-[0.98] cursor-pointer"
+                   active:scale-[0.98] cursor-pointer hover:scale-[1.02]"
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">
@@ -175,11 +194,14 @@ export default function CreateForm() {
             Пренасочване към плащане...
           </span>
         ) : (
-          "Създай и плати €1.99 💝"
+          <span className="flex items-center justify-center gap-2">
+            Създай и плати €1.99
+            <span className="text-lg">💝</span>
+          </span>
         )}
       </button>
 
-      <p className="text-xs text-center text-gray-400">
+      <p className="text-xs text-center text-gray-400 leading-relaxed">
         Ще бъдете пренасочен/а към Stripe за сигурно плащане. Имейлът Ви няма да бъде използван за маркетинг и няма да получавате рекламни съобщения.
       </p>
     </form>

@@ -22,8 +22,8 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     if (session.payment_status !== "paid") {
       return (
         <main className="min-h-screen flex items-center justify-center px-4">
-          <div className="text-center space-y-4 max-w-md">
-            <div className="text-5xl">😕</div>
+          <div className="text-center space-y-4 max-w-md animate-stagger-in stagger-1">
+            <div className="text-5xl animate-gentle-float">😕</div>
             <h1 className="text-2xl font-bold text-gray-800">
               Плащането не е завършено
             </h1>
@@ -32,7 +32,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             </p>
             <a
               href="/"
-              className="inline-block px-6 py-3 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition-colors"
+              className="liquid-glass liquid-glass-pink inline-block px-6 py-3 text-white rounded-full transition-all duration-300 hover:scale-105 active:scale-95"
             >
               Към началото
             </a>
@@ -59,19 +59,31 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     const shareableLink = `${appUrl}/v/${token}`;
 
     return (
-      <main className="min-h-screen flex items-center justify-center px-4 py-12">
-        <div className="text-center space-y-6 max-w-lg w-full">
-          <div className="text-6xl">🎉</div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+      <main className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
+        {/* Subtle radial glow background */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse at 50% 30%, rgba(236,72,153,0.06) 0%, transparent 60%)",
+          }}
+        />
+
+        <div className="text-center space-y-6 max-w-lg w-full relative z-10">
+          {/* Celebration emoji */}
+          <div className="animate-celebrate">
+            <div className="text-6xl animate-gentle-float emoji-ring inline-block">🎉</div>
+          </div>
+
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 animate-stagger-in stagger-2">
             Твоята datememaybe покана е готова!
           </h1>
 
           {/* Споделяем линк */}
-          <div className="bg-white rounded-2xl shadow-lg border border-pink-100 p-6 space-y-4">
+          <div className="bg-white rounded-2xl shadow-lg border border-pink-100 p-6 space-y-4 magnetic-hover animate-stagger-in stagger-3">
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Твоят уникален линк за покана:
             </label>
-            <div className="flex items-center gap-2 bg-pink-50 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-2 bg-pink-50 rounded-xl px-4 py-3 border border-pink-100/50">
               <code className="flex-1 text-pink-700 text-sm break-all font-mono">
                 {shareableLink}
               </code>
@@ -80,7 +92,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
           </div>
 
           {/* QR код */}
-          <div className="bg-white rounded-2xl shadow-lg border border-pink-100 p-6">
+          <div className="bg-white rounded-2xl shadow-lg border border-pink-100 p-6 magnetic-hover animate-stagger-in stagger-4">
             <p className="text-sm font-medium text-gray-600 mb-3">
               Или сканирай този QR код:
             </p>
@@ -90,21 +102,24 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                 alt="QR код за линка на поканата"
                 width={200}
                 height={200}
-                className="rounded-xl"
+                className="rounded-xl shadow-md"
               />
             </div>
           </div>
 
-          <a
-            href={`/v/${token}`}
-            className="inline-block px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-full
-                       hover:from-pink-600 hover:to-rose-600 transition-all shadow-lg"
-          >
-            Прегледай поканата си 💝
-          </a>
+          <div className="animate-stagger-in stagger-5">
+            <a
+              href={`/v/${token}`}
+              className="liquid-glass liquid-glass-pink inline-block px-6 py-3 text-white rounded-full
+                         transition-all duration-300
+                         hover:scale-105 active:scale-95"
+            >
+              Прегледай поканата си 💝
+            </a>
+          </div>
 
-          <p className="text-xs text-gray-400">
-            Съвет: Изпрати линка чрез SMS, имейл или социални мрежи!
+          <p className="text-xs text-gray-400 animate-stagger-in stagger-5">
+            Съвет: Изпрати линка чрез SMS, имейл или социални мрежи! 💬
           </p>
         </div>
       </main>
@@ -113,8 +128,8 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     console.error("Грешка на страницата за успех:", error);
     return (
       <main className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center space-y-4 max-w-md">
-          <div className="text-5xl">❌</div>
+        <div className="text-center space-y-4 max-w-md animate-stagger-in stagger-1">
+          <div className="text-5xl animate-gentle-float">❌</div>
           <h1 className="text-2xl font-bold text-gray-800">
             Нещо се обърка
           </h1>
@@ -124,7 +139,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
           </p>
           <a
             href="/"
-            className="inline-block px-6 py-3 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition-colors"
+            className="liquid-glass liquid-glass-pink inline-block px-6 py-3 text-white rounded-full transition-all duration-300 hover:scale-105 active:scale-95"
           >
             Към началото
           </a>
