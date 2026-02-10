@@ -20,7 +20,6 @@ function getLocale(request: NextRequest): Locale {
   const country =
     request.headers.get("x-vercel-ip-country") ||
     request.headers.get("cf-ipcountry") ||
-    request.geo?.country ||
     "";
   if (country === "BG") return "bg";
 
