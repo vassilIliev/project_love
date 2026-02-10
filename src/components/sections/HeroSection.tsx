@@ -20,8 +20,8 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="hero-section flex flex-col items-center justify-center px-4 pt-6 pb-4 text-center">
-      <div className="space-y-3 sm:space-y-4 max-w-xl mx-auto">
+    <section className="hero-section relative flex flex-col items-center justify-center px-4 text-center">
+      <div className="space-y-3 sm:space-y-4 max-w-xl mx-auto -mt-16 sm:-mt-20">
         {/* Animated emoji with decorative ring */}
         <div className="animate-stagger-in stagger-1 !mb-0 pb-5">
           <div className="emoji-ring inline-block">
@@ -72,15 +72,15 @@ export default function HeroSection() {
             </span>
           </button>
         </div>
+      </div>
 
-        {/* Scroll indicator */}
-        <div className="pt-3 sm:pt-6 animate-stagger-in stagger-5">
-          <div className="animate-bounce text-pink-300 text-2xl flex flex-col items-center gap-1">
-            <span className="text-xs tracking-widest uppercase text-gray-400 font-medium">Разгледай</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 5v14M5 12l7 7 7-7"/>
-            </svg>
-          </div>
+      {/* Scroll indicator — pinned to bottom of hero */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 animate-stagger-in stagger-5">
+        <div className="animate-bounce text-pink-300 text-2xl flex flex-col items-center gap-1">
+          <span className="text-xs tracking-widest uppercase text-gray-400 font-medium">Разгледай</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14M5 12l7 7 7-7"/>
+          </svg>
         </div>
       </div>
     </section>
