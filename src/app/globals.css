@@ -23,6 +23,22 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ═══════════════════════════════════════════════════
+   HERO SECTION — viewport-aware sizing
+   Uses dvh (dynamic viewport height) with vh fallback
+   and clamp() for the heading so it scales consistently
+   across dev / production / different browsers.
+   ═══════════════════════════════════════════════════ */
+.hero-section {
+  min-height: calc(100vh - 3.5rem);            /* fallback */
+  min-height: calc(100dvh - 3.5rem);           /* accounts for browser chrome */
+}
+
+.hero-heading {
+  font-size: clamp(1.875rem, 5vw, 3.75rem);   /* scales between ~text-3xl and text-6xl */
+  line-height: 1.15;
+}
+
 /* Word break utility for long text on small screens */
 .overflow-wrap-anywhere {
   overflow-wrap: anywhere;
