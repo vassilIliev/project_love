@@ -179,7 +179,7 @@ export default function InvitationCard({
         style={{
           left: "50%",
           top: "50%",
-          transform: "translate(calc(-100% - 12px), 12px)",
+          transform: "translate(calc(-100% - 8px), 12px)",
           transition: "opacity 0.7s ease, transform 0.7s ease",
         }}
       >
@@ -192,7 +192,7 @@ export default function InvitationCard({
         label="НЕ"
         hidden={showMessage}
         initialTopPercent={50}
-        initialLeftOffset={16}
+        initialLeftOffset={12}
         onSurrender={fireConfettiAndReveal}
       />
 

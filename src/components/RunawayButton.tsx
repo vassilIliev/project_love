@@ -79,16 +79,17 @@ export default function RunawayButton({
 
     const container = containerRef.current.getBoundingClientRect();
     const button = buttonRef.current.getBoundingClientRect();
-    const padding = 24;
+    const padding = container.width < 400 ? 16 : 24;
+    const sidePadding = container.width < 400 ? 20 : padding;
 
-    const maxX = container.width - button.width - padding;
+    const maxX = container.width - button.width - sidePadding;
     const maxY = container.height - button.height - padding;
 
     let newX: number, newY: number;
     let attempts = 0;
 
     do {
-      newX = padding + Math.random() * (maxX - padding);
+      newX = sidePadding + Math.random() * (maxX - sidePadding);
       newY = padding + Math.random() * (maxY - padding);
       attempts++;
     } while (
@@ -175,9 +176,9 @@ export default function RunawayButton({
         }
       }}
       onClick={surrendered ? handleClick : undefined}
-      className={`absolute px-16 py-5 font-bold rounded-full
+      className={`absolute px-10 sm:px-16 py-5 font-bold rounded-full
                  select-none focus:outline-none focus:ring-2
-                 text-3xl cursor-pointer
+                 text-2xl sm:text-3xl cursor-pointer
                  liquid-glass
                  ${turnedYes
                    ? "liquid-glass-pink text-white focus:ring-pink-300 animate-glow-pulse"

@@ -89,11 +89,11 @@ export default function ConfettiButton({
       aria-label={`${label} button`}
       onClick={handleClick}
       disabled={clicked}
-      className={`liquid-glass liquid-glass-pink relative z-20 px-16 py-5
+      className={`liquid-glass liquid-glass-pink relative z-20 px-10 sm:px-16 py-5
                  text-white font-bold rounded-full
                  active:scale-95
                  focus:outline-none focus:ring-2 focus:ring-pink-300
-                 text-3xl disabled:opacity-80 cursor-pointer
+                 text-2xl sm:text-3xl disabled:opacity-80 cursor-pointer
                  hover:scale-105
                  ${!clicked ? "animate-glow-pulse" : ""}`}
       style={{
