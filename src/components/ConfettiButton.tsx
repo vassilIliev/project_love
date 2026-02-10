@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import confetti from "canvas-confetti";
 
 interface ConfettiButtonProps {
@@ -11,14 +11,28 @@ interface ConfettiButtonProps {
 /**
  * The YES button. On click, fires a dramatic confetti celebration and calls onConfirm.
  * Features a pulsing glow and shimmer to draw attention.
+ *
+ * Perf notes:
+ * - RAF and setTimeout cleaned up on unmount.
+ * - handleClick memoized to avoid re-creation.
  */
 export default function ConfettiButton({
   label = "YES",
   onConfirm,
 }: ConfettiButtonProps) {
   const [clicked, setClicked] = useState(false);
+  const rafRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleClick = () => {
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const handleClick = useCallback(() => {
     if (clicked) return;
     setClicked(true);
 
@@ -43,7 +57,7 @@ export default function ConfettiButton({
       });
 
       if (Date.now() < end) {
-        requestAnimationFrame(frame);
+        rafRef.current = requestAnimationFrame(frame);
       }
     };
     frame();
@@ -57,7 +71,7 @@ export default function ConfettiButton({
     });
 
     // Delayed secondary burst for extra drama
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       confetti({
         particleCount: 80,
         spread: 100,
@@ -68,7 +82,7 @@ export default function ConfettiButton({
     }, 400);
 
     onConfirm();
-  };
+  }, [clicked, onConfirm]);
 
   return (
     <button
@@ -76,12 +90,15 @@ export default function ConfettiButton({
       onClick={handleClick}
       disabled={clicked}
       className={`liquid-glass liquid-glass-pink relative z-20 px-16 py-5
-                 text-white font-bold rounded-full transition-all duration-300
+                 text-white font-bold rounded-full
                  active:scale-95
                  focus:outline-none focus:ring-2 focus:ring-pink-300
                  text-3xl disabled:opacity-80 cursor-pointer
                  hover:scale-105
                  ${!clicked ? "animate-glow-pulse" : ""}`}
+      style={{
+        transition: "transform 0.3s ease, opacity 0.3s ease",
+      }}
     >
       {label}
     </button>

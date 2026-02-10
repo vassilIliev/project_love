@@ -31,6 +31,7 @@ html {
 
 /* ═══════════════════════════════════════════════════
    FLOATING HEARTS — float up with gentle horizontal sway
+   GPU-composited: uses only transform + opacity
    ═══════════════════════════════════════════════════ */
 @keyframes float-up {
   0% {
@@ -60,10 +61,13 @@ html {
 
 .animate-float-heart {
   animation: float-up linear infinite;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 /* ═══════════════════════════════════════════════════
    FADE-IN — used for revealed messages
+   GPU-composited: transform + opacity only
    ═══════════════════════════════════════════════════ */
 @keyframes fade-in {
   from {
@@ -78,26 +82,28 @@ html {
 
 .animate-fade-in {
   animation: fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
 }
 
 /* ═══════════════════════════════════════════════════
    STAGGER FADE-IN — for sequenced element entrances
+   Removed filter:blur() — expensive CPU rasterization.
+   Uses transform + opacity only → runs on GPU compositor.
    ═══════════════════════════════════════════════════ */
 @keyframes stagger-in {
   from {
     opacity: 0;
-    transform: translateY(30px);
-    filter: blur(4px);
+    transform: translateY(24px) scale(0.97);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .animate-stagger-in {
   animation: stagger-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
 }
 
 .stagger-1 { animation-delay: 0.05s; }
@@ -108,22 +114,22 @@ html {
 
 /* ═══════════════════════════════════════════════════
    SCROLL-REVEAL — elements that appear on scroll
+   Removed filter:blur() — uses transform + opacity only.
    ═══════════════════════════════════════════════════ */
 @keyframes reveal-up {
   from {
     opacity: 0;
-    transform: translateY(40px);
-    filter: blur(6px);
+    transform: translateY(40px) scale(0.97);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .scroll-reveal {
   opacity: 0;
+  will-change: transform, opacity;
 }
 
 .scroll-reveal.revealed {
@@ -145,10 +151,12 @@ html {
 .animate-gradient-text {
   background-size: 200% 200%;
   animation: gradient-shift 4s ease-in-out infinite;
+  will-change: background-position;
 }
 
 /* ═══════════════════════════════════════════════════
    BREATHING PULSE — gentle scale for emojis/icons
+   GPU-composited: transform only
    ═══════════════════════════════════════════════════ */
 @keyframes breathe {
   0%, 100% {
@@ -161,26 +169,45 @@ html {
 
 .animate-breathe {
   animation: breathe 3s ease-in-out infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 /* ═══════════════════════════════════════════════════
    GLOW PULSE — soft glow behind CTA buttons
+   Uses pseudo-element opacity trick for GPU compositing
+   instead of animating box-shadow directly.
    ═══════════════════════════════════════════════════ */
-@keyframes glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(236, 72, 153, 0.3), 0 4px 15px rgba(0, 0, 0, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 35px rgba(236, 72, 153, 0.5), 0 4px 20px rgba(0, 0, 0, 0.15);
-  }
+.animate-glow-pulse {
+  position: relative;
 }
 
-.animate-glow-pulse {
-  animation: glow-pulse 2.5s ease-in-out infinite;
+.animate-glow-pulse::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background: transparent;
+  box-shadow: 0 0 35px rgba(236, 72, 153, 0.5), 0 4px 20px rgba(0, 0, 0, 0.15);
+  opacity: 0.5;
+  animation: glow-fade 2.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+  will-change: opacity;
+}
+
+@keyframes glow-fade {
+  0%, 100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
 }
 
 /* ═══════════════════════════════════════════════════
    SHIMMER — sliding light effect on buttons
+   GPU-composited: transform only
    ═══════════════════════════════════════════════════ */
 @keyframes shimmer {
   0% {
@@ -213,6 +240,8 @@ html {
   );
   animation: shimmer 3s ease-in-out infinite;
   pointer-events: none;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -236,10 +265,12 @@ html {
 .animate-bg-drift {
   background-size: 300% 300%;
   animation: bg-drift 12s ease-in-out infinite;
+  will-change: background-position;
 }
 
 /* ═══════════════════════════════════════════════════
    SVG HEART FLOAT — invitation card background hearts
+   GPU-composited: transform + opacity only
    ═══════════════════════════════════════════════════ */
 @keyframes heart-drift {
   0%, 100% {
@@ -257,30 +288,34 @@ html {
 .animate-heart-drift {
   animation: heart-drift var(--heart-duration, 6s) ease-in-out infinite;
   animation-delay: var(--heart-delay, 0s);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  contain: layout style;
 }
 
 /* ═══════════════════════════════════════════════════
    REVEAL SEQUENCE — staggered reveal for invitation message
+   Removed filter:blur() — GPU-composited via transform + opacity.
    ═══════════════════════════════════════════════════ */
 @keyframes reveal-scale {
   from {
     opacity: 0;
     transform: scale(0.8) translateY(15px);
-    filter: blur(4px);
   }
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
-    filter: blur(0);
   }
 }
 
 .animate-reveal-item {
   animation: reveal-scale 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
 }
 
 /* ═══════════════════════════════════════════════════
    SPARKLE — small sparkle burst effect
+   GPU-composited: transform + opacity only
    ═══════════════════════════════════════════════════ */
 @keyframes sparkle {
   0% {
@@ -299,10 +334,13 @@ html {
 
 .animate-sparkle {
   animation: sparkle 1.5s ease-in-out infinite;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 /* ═══════════════════════════════════════════════════
    NAVBAR — subtle border glow
+   Uses opacity animation on pseudo-element for GPU compositing
    ═══════════════════════════════════════════════════ */
 @keyframes nav-glow {
   0%, 100% {
@@ -322,10 +360,12 @@ html {
 
 /* ═══════════════════════════════════════════════════
    INPUT FOCUS — elegant underline expand
+   Explicit transition properties instead of 'all'
    ═══════════════════════════════════════════════════ */
 .input-glow {
   position: relative;
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .input-glow:focus {
@@ -335,6 +375,7 @@ html {
 
 /* ═══════════════════════════════════════════════════
    CELEBRATION BOUNCE — success page
+   Already uses translate3d for GPU compositing ✓
    ═══════════════════════════════════════════════════ */
 @keyframes celebrate-bounce {
   0%, 20%, 53%, 100% {
@@ -359,10 +400,12 @@ html {
 
 .animate-celebrate {
   animation: celebrate-bounce 1.2s both;
+  will-change: transform;
 }
 
 /* ═══════════════════════════════════════════════════
    GENTLE FLOAT — for page icons/emojis
+   GPU-composited: transform only
    ═══════════════════════════════════════════════════ */
 @keyframes gentle-float {
   0%, 100% {
@@ -375,10 +418,13 @@ html {
 
 .animate-gentle-float {
   animation: gentle-float 3.5s ease-in-out infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 /* ═══════════════════════════════════════════════════
    MAGNETIC HOVER — for interactive cards
+   Explicit transition properties instead of 'all'
    ═══════════════════════════════════════════════════ */
 .magnetic-hover {
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), 
@@ -392,6 +438,7 @@ html {
 
 /* ═══════════════════════════════════════════════════
    PARTICLE RING — decorative ring behind emojis
+   GPU-composited: transform + opacity
    ═══════════════════════════════════════════════════ */
 @keyframes ring-rotate {
   from { transform: rotate(0deg); }
@@ -420,13 +467,15 @@ html {
   border-radius: 50%;
   animation: ring-rotate 20s linear infinite, ring-pulse 3s ease-in-out infinite;
   pointer-events: none;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 /* ═══════════════════════════════════════════════════
    LIQUID GLASS — translucent frosted glass buttons
    Inspired by Apple's liquid glass design language.
-   Uses layered backdrop-blur, gradient borders,
-   inner light reflections, and organic hover morphs.
+   Optimized: shine sweep only on hover to avoid
+   continuous paint. Explicit transition properties.
    ═══════════════════════════════════════════════════ */
 
 /* Keyframes for the liquid glass inner shine sweep */
@@ -439,16 +488,6 @@ html {
   }
 }
 
-/* Gentle border shimmer for the glass edge */
-@keyframes glass-border-shift {
-  0%, 100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 0.9;
-  }
-}
-
 /* ─── Base liquid glass ─── */
 .liquid-glass {
   position: relative;
@@ -457,10 +496,15 @@ html {
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.35);
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: backdrop-filter 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              background 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              color 0.3s ease;
 }
 
-/* Inner shine — top highlight reflection */
+/* Inner shine — top highlight reflection (static, no animation) */
 .liquid-glass::before {
   content: "";
   position: absolute;
@@ -480,7 +524,7 @@ html {
   transition: opacity 0.4s ease;
 }
 
-/* Sweeping light reflection */
+/* Sweeping light reflection — only animates on hover to save GPU */
 .liquid-glass::after {
   content: "";
   position: absolute;
@@ -496,9 +540,16 @@ html {
     rgba(255, 255, 255, 0.15) 55%,
     transparent 80%
   );
-  animation: liquid-shine 4s ease-in-out infinite;
+  transform: translateX(-120%) skewX(-15deg);
   pointer-events: none;
   z-index: 2;
+  will-change: transform;
+  backface-visibility: hidden;
+  transition: none;
+}
+
+.liquid-glass:hover::after {
+  animation: liquid-shine 0.8s ease-out forwards;
 }
 
 .liquid-glass:hover {
@@ -603,7 +654,6 @@ html {
 
 .liquid-glass-sm::after {
   width: 50%;
-  animation-duration: 3s;
 }
 
 /* ─── Green variant (for copied state) ─── */
@@ -632,5 +682,4 @@ html {
     rgba(255, 255, 255, 0.15) 55%,
     transparent 80%
   );
-  animation: liquid-shine 4s ease-in-out infinite;
 }

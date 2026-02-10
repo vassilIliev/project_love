@@ -32,7 +32,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             </p>
             <a
               href="/"
-              className="liquid-glass liquid-glass-pink inline-block px-6 py-3 text-white rounded-full transition-all duration-300 hover:scale-105 active:scale-95"
+              className="liquid-glass liquid-glass-pink inline-block px-6 py-3 text-white rounded-full hover:scale-105 active:scale-95"
             >
               Към началото
             </a>
@@ -102,6 +102,8 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                 alt="QR код за линка на поканата"
                 width={200}
                 height={200}
+                loading="lazy"
+                decoding="async"
                 className="rounded-xl shadow-md"
               />
             </div>
@@ -111,7 +113,6 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             <a
               href={`/v/${token}`}
               className="liquid-glass liquid-glass-pink inline-block px-6 py-3 text-white rounded-full
-                         transition-all duration-300
                          hover:scale-105 active:scale-95"
             >
               Прегледай поканата си 💝
@@ -139,7 +140,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
           </p>
           <a
             href="/"
-            className="liquid-glass liquid-glass-pink inline-block px-6 py-3 text-white rounded-full transition-all duration-300 hover:scale-105 active:scale-95"
+            className="liquid-glass liquid-glass-pink inline-block px-6 py-3 text-white rounded-full hover:scale-105 active:scale-95"
           >
             Към началото
           </a>

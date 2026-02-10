@@ -32,7 +32,7 @@ export default function CopyLinkButton({ link }: CopyLinkButtonProps) {
       onClick={handleCopy}
       aria-label="Копирай линка"
       className={`shrink-0 px-4 py-2 text-white text-sm font-medium
-                 rounded-lg transition-all duration-300 active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400
+                 rounded-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400
                  cursor-pointer hover:scale-105
                  liquid-glass liquid-glass-sm
                  ${copied

@@ -19,6 +19,12 @@ interface RunawayButtonProps {
  * Starts to the right of the midpoint (forming a centered pair with YES),
  * and smoothly flees when the cursor approaches.
  * After maxDodges it stops running. First click turns it into YES, second click confirms.
+ *
+ * Perf notes:
+ * - mousemove is throttled via requestAnimationFrame to avoid layout thrashing.
+ * - getBoundingClientRect() calls are batched inside the RAF callback.
+ * - Event listener uses { passive: true } to avoid blocking scroll.
+ * - setTimeout is cleaned up on unmount.
  */
 export default function RunawayButton({
   containerRef,
@@ -36,16 +42,23 @@ export default function RunawayButton({
   const [turnedYes, setTurnedYes] = useState(false);
   const isMovingRef = useRef(false);
   const dodgeCountRef = useRef(0);
+  const moveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (moveTimerRef.current) clearTimeout(moveTimerRef.current);
+    };
+  }, []);
 
   // Place the button to the right of center on mount
   useEffect(() => {
     if (!containerRef.current || !buttonRef.current || initialized) return;
-    const cw = containerRef.current.getBoundingClientRect().width;
-    const ch = containerRef.current.getBoundingClientRect().height;
+    const rect = containerRef.current.getBoundingClientRect();
 
     setPosition({
-      x: cw / 2 + initialLeftOffset,
-      y: ch * (initialTopPercent / 100) + 12,
+      x: rect.width / 2 + initialLeftOffset,
+      y: rect.height * (initialTopPercent / 100) + 12,
     });
     setInitialized(true);
   }, [containerRef, initialized, initialTopPercent, initialLeftOffset]);
@@ -86,30 +99,48 @@ export default function RunawayButton({
 
     setPosition({ x: newX, y: newY });
 
-    setTimeout(() => {
+    moveTimerRef.current = setTimeout(() => {
       isMovingRef.current = false;
     }, 450);
   }, [containerRef, position, surrendered, maxDodges]);
 
-  // Desktop: flee when cursor gets close
+  // Desktop: flee when cursor gets close — throttled via RAF
   useEffect(() => {
     const container = containerRef.current;
     const button = buttonRef.current;
     if (!container || !button || !initialized || surrendered) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      const btnRect = button.getBoundingClientRect();
+    let rafId: number | null = null;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+
+    const checkDistance = () => {
+      rafId = null;
+      if (!buttonRef.current) return;
+      const btnRect = buttonRef.current.getBoundingClientRect();
       const btnCenterX = btnRect.left + btnRect.width / 2;
       const btnCenterY = btnRect.top + btnRect.height / 2;
-      const distance = Math.hypot(e.clientX - btnCenterX, e.clientY - btnCenterY);
+      const distance = Math.hypot(lastMouseX - btnCenterX, lastMouseY - btnCenterY);
 
       if (distance < 100) {
         moveAway();
       }
     };
 
-    container.addEventListener("mousemove", handleMouseMove);
-    return () => container.removeEventListener("mousemove", handleMouseMove);
+    const handleMouseMove = (e: MouseEvent) => {
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+      // Throttle: only schedule one RAF per frame
+      if (rafId === null) {
+        rafId = requestAnimationFrame(checkDistance);
+      }
+    };
+
+    container.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => {
+      container.removeEventListener("mousemove", handleMouseMove);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, [containerRef, moveAway, initialized, surrendered]);
 
   if (hidden) return null;
@@ -147,7 +178,7 @@ export default function RunawayButton({
       className={`absolute px-16 py-5 font-bold rounded-full
                  select-none focus:outline-none focus:ring-2
                  text-3xl cursor-pointer
-                 liquid-glass transition-all duration-500
+                 liquid-glass
                  ${turnedYes
                    ? "liquid-glass-pink text-white focus:ring-pink-300 animate-glow-pulse"
                    : "liquid-glass-gray text-gray-700 focus:ring-gray-400"
@@ -158,6 +189,7 @@ export default function RunawayButton({
         transform: position ? "none" : "translateY(-50%)",
         zIndex: 10,
         transition: "left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.5s ease, color 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease",
+        willChange: "left, top",
       }}
     >
       {turnedYes ? "ДА" : label}

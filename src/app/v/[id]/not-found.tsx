@@ -24,7 +24,6 @@ export default function InvitationNotFound() {
             href="/"
             className="liquid-glass liquid-glass-pink inline-block px-8 py-3 text-white
                        font-semibold rounded-full
-                       transition-all duration-300
                        hover:scale-105 active:scale-95"
           >
             Създай своята ✉️

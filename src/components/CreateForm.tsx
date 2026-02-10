@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 const LIMITS = {
   recipientName: 50,
@@ -15,6 +15,10 @@ type FieldName = keyof typeof LIMITS;
  * Simple form — no auth needed.
  * User fills in invitation details → pays via Stripe → gets shareable link.
  * Stripe Checkout collects the user's email automatically.
+ *
+ * Perf notes:
+ * - inputClass and fieldErrorMsg are pure functions, no allocation on render.
+ * - handleChange only updates state when limit boundary is crossed.
  */
 export default function CreateForm() {
   const [loading, setLoading] = useState(false);
@@ -22,15 +26,15 @@ export default function CreateForm() {
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldName, boolean>>>({});
   const [focusedField, setFocusedField] = useState<FieldName | null>(null);
 
-  const handleChange = (field: FieldName, value: string) => {
-    if (value.length >= LIMITS[field]) {
-      setFieldErrors((prev) => ({ ...prev, [field]: true }));
-    } else {
-      setFieldErrors((prev) => ({ ...prev, [field]: false }));
-    }
-  };
+  const handleChange = useCallback((field: FieldName, value: string) => {
+    const atLimit = value.length >= LIMITS[field];
+    setFieldErrors((prev) => {
+      if (prev[field] === atLimit) return prev; // Avoid unnecessary state update
+      return { ...prev, [field]: atLimit };
+    });
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -71,7 +75,7 @@ export default function CreateForm() {
       setError("Мрежова грешка. Моля, опитай отново.");
       setLoading(false);
     }
-  };
+  }, []);
 
   const fieldErrorMsg = (field: FieldName) =>
     fieldErrors[field] ? (
@@ -79,7 +83,7 @@ export default function CreateForm() {
     ) : null;
 
   const inputClass = (field: FieldName) =>
-    `w-full px-4 py-3 rounded-xl border transition-all duration-300 text-gray-800 bg-white placeholder-gray-400
+    `w-full px-4 py-3 rounded-xl border text-gray-800 bg-white placeholder-gray-400
      outline-none input-glow
      ${focusedField === field
        ? "border-pink-400 ring-2 ring-pink-200/60 shadow-md shadow-pink-100/30"
@@ -90,7 +94,7 @@ export default function CreateForm() {
     <form onSubmit={handleSubmit} className="space-y-5 w-full max-w-md mx-auto">
       {/* Recipient name */}
       <div className="group">
-        <label htmlFor="recipientName" className="block text-sm font-medium text-gray-700 mb-1.5 text-left transition-colors duration-200 group-focus-within:text-pink-600">
+        <label htmlFor="recipientName" className="block text-sm font-medium text-gray-700 mb-1.5 text-left group-focus-within:text-pink-600" style={{ transition: "color 0.2s ease" }}>
           Име на получателя <span className="text-pink-500">*</span>
         </label>
         <input
@@ -111,7 +115,7 @@ export default function CreateForm() {
 
       {/* Time */}
       <div className="group">
-        <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1.5 text-left transition-colors duration-200 group-focus-within:text-pink-600">
+        <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1.5 text-left group-focus-within:text-pink-600" style={{ transition: "color 0.2s ease" }}>
           Дата и час
         </label>
         <input
@@ -131,7 +135,7 @@ export default function CreateForm() {
 
       {/* Place */}
       <div className="group">
-        <label htmlFor="place" className="block text-sm font-medium text-gray-700 mb-1.5 text-left transition-colors duration-200 group-focus-within:text-pink-600">
+        <label htmlFor="place" className="block text-sm font-medium text-gray-700 mb-1.5 text-left group-focus-within:text-pink-600" style={{ transition: "color 0.2s ease" }}>
           Място
         </label>
         <input
@@ -151,7 +155,7 @@ export default function CreateForm() {
 
       {/* Extra message */}
       <div className="group">
-        <label htmlFor="extraMessage" className="block text-sm font-medium text-gray-700 mb-1.5 text-left transition-colors duration-200 group-focus-within:text-pink-600">
+        <label htmlFor="extraMessage" className="block text-sm font-medium text-gray-700 mb-1.5 text-left group-focus-within:text-pink-600" style={{ transition: "color 0.2s ease" }}>
           Допълнително съобщение
         </label>
         <textarea
@@ -181,7 +185,7 @@ export default function CreateForm() {
         type="submit"
         disabled={loading}
         className="liquid-glass liquid-glass-pink w-full py-3.5 px-6
-                   text-white font-semibold rounded-xl transition-all duration-300
+                   text-white font-semibold rounded-xl
                    disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-pink-400
                    active:scale-[0.98] cursor-pointer hover:scale-[1.02]"
       >

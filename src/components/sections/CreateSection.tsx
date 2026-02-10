@@ -3,9 +3,23 @@
 import CreateForm from "@/components/CreateForm";
 import ScrollReveal from "@/components/ScrollReveal";
 
+/**
+ * Create invitation form section.
+ *
+ * Perf notes:
+ * - content-visibility: auto skips rendering when section is off-screen.
+ * - contain-intrinsic-size prevents layout shift when content becomes visible.
+ */
 export default function CreateSection() {
   return (
-    <section id="create-section" className="py-20 px-4">
+    <section
+      id="create-section"
+      className="py-20 px-4"
+      style={{
+        contentVisibility: "auto",
+        containIntrinsicSize: "auto 800px",
+      }}
+    >
       <div className="max-w-2xl mx-auto text-center space-y-8">
         <ScrollReveal>
           <div>
@@ -21,7 +35,7 @@ export default function CreateSection() {
 
         <ScrollReveal delay={150}>
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-pink-100 p-8
-                         magnetic-hover transition-all duration-500 hover:bg-white/90">
+                         magnetic-hover">
             <CreateForm />
           </div>
         </ScrollReveal>

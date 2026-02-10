@@ -1,13 +1,23 @@
 "use client";
 
-export default function HeroSection() {
-  const scrollToForm = () => {
-    document.getElementById("create-section")?.scrollIntoView({ behavior: "smooth" });
-  };
+import { useCallback } from "react";
 
-  const scrollToDemo = () => {
+/**
+ * Hero section — the main landing view.
+ *
+ * Perf notes:
+ * - All animations are CSS-only with GPU-composited properties.
+ * - scrollIntoView uses smooth behavior (native browser implementation).
+ * - No re-renders needed — scrollTo callbacks are stable via useCallback.
+ */
+export default function HeroSection() {
+  const scrollToForm = useCallback(() => {
+    document.getElementById("create-section")?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  const scrollToDemo = useCallback(() => {
     document.getElementById("demo-section")?.scrollIntoView({ behavior: "smooth" });
-  };
+  }, []);
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-4 text-center">
@@ -39,7 +49,7 @@ export default function HeroSection() {
           <button
             onClick={scrollToForm}
             className="liquid-glass liquid-glass-pink px-8 py-4
-                       text-white font-semibold rounded-full text-lg transition-all duration-300
+                       text-white font-semibold rounded-full text-lg
                        active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400
                        cursor-pointer animate-glow-pulse hover:scale-105"
           >
@@ -48,12 +58,15 @@ export default function HeroSection() {
           <button
             onClick={scrollToDemo}
             className="liquid-glass liquid-glass-light group px-8 py-4 text-pink-600 font-semibold rounded-full text-lg
-                       transition-all duration-300 active:scale-95 focus:outline-none
+                       active:scale-95 focus:outline-none
                        focus:ring-2 focus:ring-pink-400 cursor-pointer hover:scale-105"
           >
             <span className="flex items-center gap-2">
               Виж примерна покана
-              <span className="inline-block transition-transform duration-300 group-hover:translate-x-0.5 group-hover:scale-110">
+              <span
+                className="inline-block group-hover:translate-x-0.5 group-hover:scale-110"
+                style={{ transition: "transform 0.3s ease" }}
+              >
                 👀
               </span>
             </span>

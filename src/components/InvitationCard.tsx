@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useMemo, useCallback } from "react";
+import { useRef, useState, useMemo, useCallback, useEffect } from "react";
 import confetti from "canvas-confetti";
 import ConfettiButton from "./ConfettiButton";
 import RunawayButton from "./RunawayButton";
@@ -45,9 +45,18 @@ export default function InvitationCard({
 }: InvitationCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showMessage, setShowMessage] = useState(false);
+  const rafRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hearts = useMemo(() => generateHearts(recipientName), [recipientName]);
 
+  // Cleanup confetti RAF and timers on unmount
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const fireConfettiAndReveal = useCallback(() => {
     // Fire confetti from multiple angles
@@ -70,7 +79,7 @@ export default function InvitationCard({
         colors: ["#ff69b4", "#ff1493", "#ff6b6b", "#ffd700", "#ff4500", "#e879f9", "#c084fc"],
       });
       if (Date.now() < end) {
-        requestAnimationFrame(frame);
+        rafRef.current = requestAnimationFrame(frame);
       }
     };
     frame();
@@ -82,7 +91,7 @@ export default function InvitationCard({
       colors: ["#ff69b4", "#ff1493", "#ff6b6b", "#ffd700", "#ff4500", "#e91e63", "#e879f9", "#c084fc"],
     });
 
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       confetti({
         particleCount: 80,
         spread: 100,
@@ -95,8 +104,13 @@ export default function InvitationCard({
     setShowMessage(true);
   }, []);
 
+  const handleConfirm = useCallback(() => setShowMessage(true), []);
+
   // Count how many detail items we have for staggering
-  const detailItems = [time, place, extraMessage].filter(Boolean);
+  const detailItems = useMemo(
+    () => [time, place, extraMessage].filter(Boolean),
+    [time, place, extraMessage]
+  );
 
   return (
     <div
@@ -106,8 +120,11 @@ export default function InvitationCard({
         background: "linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 15%, #f0abfc 30%, #f9a8d4 50%, #e879f9 70%, #c4b5fd 85%, #ddd6fe 100%)",
       }}
     >
-      {/* Animated heart background with gentle drift */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      {/* Animated heart background with gentle drift — isolated paint layer */}
+      <div
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{ contain: "strict" }}
+      >
         {hearts.map((h, i) => (
           <svg
             key={i}
@@ -143,8 +160,8 @@ export default function InvitationCard({
       {/* Въпрос — вертикално центриран в горната половина */}
       <div
         className={`absolute left-0 right-0 text-center z-10 px-4 sm:px-6
-                    transition-all duration-700 ${showMessage ? "opacity-0 pointer-events-none scale-95 blur-sm" : "opacity-100"}`}
-        style={{ top: "50%", transform: "translateY(calc(-100% - 48px))" }}
+                    ${showMessage ? "opacity-0 pointer-events-none scale-95" : "opacity-100"}`}
+        style={{ top: "50%", transform: "translateY(calc(-100% - 48px))", transition: "opacity 0.7s ease, transform 0.7s ease" }}
       >
         <h2 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 leading-tight break-words overflow-wrap-anywhere max-w-[90vw] mx-auto animate-stagger-in stagger-1">
           <span className="text-pink-600 break-words">{recipientName}</span>,
@@ -157,15 +174,16 @@ export default function InvitationCard({
 
       {/* ДА — статичен, леко вляво от центъра, вертикално на 50% */}
       <div
-        className={`absolute z-20 transition-all duration-700
+        className={`absolute z-20
                     ${showMessage ? "opacity-0 pointer-events-none scale-90" : "opacity-100"}`}
         style={{
           left: "50%",
           top: "50%",
           transform: "translate(calc(-100% - 12px), 12px)",
+          transition: "opacity 0.7s ease, transform 0.7s ease",
         }}
       >
-        <ConfettiButton label="ДА" onConfirm={() => setShowMessage(true)} />
+        <ConfettiButton label="ДА" onConfirm={handleConfirm} />
       </div>
 
       {/* НЕ — стартира леко вдясно от центъра, бяга при приближаване */}
