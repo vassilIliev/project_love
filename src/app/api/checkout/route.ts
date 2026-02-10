@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const place = body.place ? sanitize(body.place, 50) : "";
     const extraMessage = body.extraMessage ? sanitize(body.extraMessage, 100) : "";
 
-    const appUrl = process.env.APP_URL || "http://localhost:3000";
+    const appUrl = (process.env.APP_URL || "http://localhost:3000").replace(/\/+$/, "");
     const priceId = process.env.STRIPE_PRICE_ID;
 
     const lineItems: import("stripe").Stripe.Checkout.SessionCreateParams.LineItem[] =

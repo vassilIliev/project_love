@@ -55,7 +55,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
       extraMessage: meta.extraMessage || undefined,
     });
 
-    const appUrl = process.env.APP_URL || "http://localhost:3000";
+    const appUrl = (process.env.APP_URL || "http://localhost:3000").replace(/\/+$/, "");
     const shareableLink = `${appUrl}/v/${token}`;
 
     return (
