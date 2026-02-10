@@ -35,7 +35,7 @@ html {
 }
 
 .hero-heading {
-  font-size: clamp(1.875rem, 5vw, 3.75rem);   /* scales between ~text-3xl and text-6xl */
+  font-size: clamp(1.5rem, 4vw, 3rem);        /* ~20% smaller: ~text-2xl → text-5xl */
   line-height: 1.15;
 }
 
