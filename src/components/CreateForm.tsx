@@ -56,12 +56,14 @@ export default function CreateForm() {
     setError(null);
 
     const fd = new FormData(e.currentTarget);
+    const ref = typeof window !== "undefined" ? sessionStorage.getItem("ref") : null;
     const data = {
       recipientName: (fd.get("recipientName") as string)?.trim(),
       time: (fd.get("time") as string)?.trim() || undefined,
       place: (fd.get("place") as string)?.trim() || undefined,
       extraMessage: (fd.get("extraMessage") as string)?.trim() || undefined,
       locale,
+      ...(ref ? { ref } : {}),
     };
 
     if (!data.recipientName) {

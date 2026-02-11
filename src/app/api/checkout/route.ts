@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
     const time = body.time ? sanitize(body.time, 50) : "";
     const place = body.place ? sanitize(body.place, 50) : "";
     const extraMessage = body.extraMessage ? sanitize(body.extraMessage, 100) : "";
+    const ref = body.ref ? sanitize(body.ref, 20) : "";
 
     // Get locale from request body (sent by the client)
     const rawLocale = body.locale || defaultLocale;
@@ -58,9 +59,10 @@ export async function POST(req: NextRequest) {
     const priceId = process.env.STRIPE_PRICE_ID;
 
     const productName = locale === "bg" ? "Покана за среща 💕" : "Date invitation 💕";
+    const refTag = ref ? ` [ref:${ref}]` : "";
     const productDesc = locale === "bg"
-      ? `Персонализирана покана за ${recipientName}`
-      : `Personalized invitation for ${recipientName}`;
+      ? `Персонализирана покана за ${recipientName}${refTag}`
+      : `Personalized invitation for ${recipientName}${refTag}`;
 
     const lineItems: import("stripe").Stripe.Checkout.SessionCreateParams.LineItem[] =
       priceId
@@ -79,6 +81,10 @@ export async function POST(req: NextRequest) {
             },
           ];
 
+    const paymentDesc = ref
+      ? `datememaybe [ref:${ref}] — ${recipientName}`
+      : `datememaybe — ${recipientName}`;
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       success_url: `${appUrl}/${locale}/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -86,12 +92,17 @@ export async function POST(req: NextRequest) {
       // Stripe collects the email — no account needed
       customer_creation: "always",
       locale: locale === "bg" ? "bg" : "en",
+      // Description visible on the payment row in Stripe dashboard
+      payment_intent_data: {
+        description: paymentDesc,
+      },
       // Store invitation data in session metadata (max 500 chars per value)
       metadata: {
         recipientName,
         time,
         place,
         extraMessage,
+        ...(ref ? { ref } : {}),
       },
       line_items: lineItems,
     });
